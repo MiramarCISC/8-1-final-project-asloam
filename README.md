@@ -1,3 +1,4 @@
+[![Open in Codespaces](https://classroom.github.com/assets/launch-codespace-2972f46106e565e64193e422d61a12cf1da4916b45550586e14ef0a7c637dd04.svg)](https://classroom.github.com/open-in-codespaces?assignment_repo_id=24263051)
 # CISC 192 Final Project Template
 
 ## Overview
@@ -67,71 +68,47 @@ make test
 make clean
 ```
 
-## Object-Oriented Sample Design
-
-This sample uses noun-based classes from the sample project:
-
-| Class | Purpose |
-|---|---|
-| `ScoreList` | Demonstrates arrays, searching, sorting, and arithmetic |
-| `Student` | Demonstrates strings and custom record/class design |
-| `Task` | Demonstrates a task record |
-| `TaskNode` | Demonstrates linked list nodes |
-| `TaskList` | Demonstrates a simple linked task list |
-| `InventoryItem` | Demonstrates inventory records |
-| `InventoryReport` | Demonstrates file-based inventory reporting |
-
-## Sample Code Is Example Only
-
-The sample code in this repository should be deleted or replaced before final submission.
-
-Students may keep the project structure, Makefile, GitHub Actions workflow, and testing pattern, but the submitted project should reflect the student's own project idea.
-
-## Required README Update
-
-Before submitting your final project, update this README.md so it describes your own project.
-
-```text
 ## Course Topics Integrated and Tested
 
+```text
 1. Week 1 Program Basics
-   - Code location:
-   - Test location:
+   - Code location: calculateTotalHours()
+   - Test location: testWeek1()
 
 2. Week 2 Decisions and Loops
-   - Code location:
-   - Test location:
+   - Code location: isValidPriority(), isValidHours()
+   - Test location: testWeek2()
 
 3. Week 3 Functions and Program Design
-   - Code location:
-   - Test location:
+   - Code location: getTaskCount(), getCompletedTaskCount
+   - Test location: testWeek3()
 
 4. Week 4 Arrays, Searching, and Sorting
-   - Code location:
-   - Test location:
+   - Code location: sortPrioritiesAscending()
+   - Test location: testWeek4()
 
 5. Week 5 Strings and Structures
-   - Code location:
-   - Test location:
+   - Code location: "Task" struct
+   - Test location: testWeek5()
 
 6. Week 6 Pointers, Dynamic Memory, and Linked Lists
-   - Code location:
-   - Test location:
+   - Code location: insertTask(), findTaskById(), removeTaskById(), clearTasks()
+   - Test location: testWeek6()
 
 7. Week 7 File I/O and Integration
-   - Code location:
-   - Test location:
+   - Code location: loadTasksFromFile(), saveTasksToFile()
+   - Test location: testWeek7()
 ```
 
 ## Final Submission Checklist
 
-- [ ] My project compiles with `make`.
-- [ ] My project runs with `./main`.
-- [ ] My tests run with `make test`.
-- [ ] I deleted or replaced the sample project code.
-- [ ] My project uses class names that are nouns from my own project.
-- [ ] My project integrates all 7 course topics in reachable code.
-- [ ] My project includes at least one unit test per course topic.
-- [ ] My README explains where each topic appears.
-- [ ] My README explains which test verifies each topic.
-- [ ] My code is committed and pushed to GitHub Classroom.
+- [X] My project compiles with `make`.
+- [X] My project runs with `./main`.
+- [X] My tests run with `make test`.
+- [X] I deleted or replaced the sample project code.
+- [X] My project uses class names that are nouns from my own project.
+- [X] My project integrates all 7 course topics in reachable code.
+- [X] My project includes at least one unit test per course topic.
+- [X] My README explains where each topic appears.
+- [X] My README explains which test verifies each topic.
+- [X] My code is committed and pushed to GitHub Classroom.
