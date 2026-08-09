@@ -1,8 +1,9 @@
 main
-test_receipt
+test_project
 build
 *.o
 *.out
 .vscode
 .idea
 cmake-build-debug
+tasks.txt

@@ -4,92 +4,135 @@
 using namespace std;
 
 int main() {
-    int choice = -1;
+    TaskNode* head = nullptr;
+    
+    loadTasksFromFile("data/tasks.txt", head);
 
-    cout << "CISC 192 Final Project Sample" << endl;
-    cout << "Sample code is provided only as an example." << endl;
-    cout << "Delete or replace the sample code before final submission." << endl;
-
-    do {
-        printMenu();
-        cin >> choice;
-
-        while (!isValidMenuChoice(choice)) {
-            cout << "Invalid choice. Enter 0-4: ";
-            cin >> choice;
+    int choice = 0;
+    while (choice != 6) {
+        cout << "\n=== TO-DO LIST TASK MANAGER ===\n";
+        cout << "1. Display All Tasks\n";
+        cout << "2. Add New Task\n";
+        cout << "3. Remove Task by ID\n";
+        cout << "4. Calculate Total Hours\n";
+        cout << "5. Save Tasks to File\n";
+        cout << "6. Exit\n";
+        cout << "Enter choice (1-6): ";
+        
+        if (!(cin >> choice)) {
+            cin.clear();
+            cin.ignore(10000, '\n');
+            cout << "Invalid input. Please enter a number between 1 and 6.\n";
+            continue;
         }
 
-        switch (choice) {
-            case 1: {
-                Student student("A123", "Alex");
-                student.getScoreList().addScore(90.0);
-                student.getScoreList().addScore(80.0);
-                student.getScoreList().addScore(100.0);
-                student.getScoreList().sortAscending();
+        if (choice == 1) {
+            TaskNode* current = head;
+            if (current == nullptr) {
+                cout << "No tasks found.\n";
+            } else {
+                int count = getTaskCount(head);
 
-                printStudent(student);
-                cout << "Score 100 found at index "
-                     << student.getScoreList().findScore(100.0)
-                     << endl;
-
-                break;
-            }
-
-            case 2: {
-                TaskList tasks;
-                tasks.insertFront(Task("study", 5));
-                tasks.insertFront(Task("project", 4));
-                tasks.markTaskComplete("study");
-
-                cout << "Task count: " << tasks.countTasks() << endl;
-                cout << "Removed completed tasks: "
-                     << tasks.removeCompletedTasks()
-                     << endl;
-                cout << "Remaining task count: " << tasks.countTasks() << endl;
-
-                break;
-            }
-
-            case 3: {
-                InventoryItem items[MAX_INVENTORY_ITEMS];
-                int count = InventoryReport::readInventoryFile(
-                    "data/inventory.txt",
-                    items,
-                    MAX_INVENTORY_ITEMS
-                );
-
-                cout << "Read " << count << " inventory item(s)." << endl;
-                cout << "Total inventory value: "
-                     << InventoryReport::calculateTotalInventoryValue(items, count)
-                     << endl;
-
-                if (InventoryReport::writeInventoryReport(
-                        "inventory_report.txt",
-                        items,
-                        count
-                    )) {
-                    cout << "Report written to inventory_report.txt" << endl;
+                TaskNode** taskArray = new TaskNode*[count];
+                TaskNode* temp = head;
+                for (int i = 0; i < count; i++) {
+                    taskArray[i] = temp;
+                    temp = temp->next;
                 }
 
-                break;
+                for (int i = 0; i < count - 1; i++) {
+                    for (int j = 0; j < count - i - 1; j++) {
+                        if (taskArray[j]->data.priority > taskArray[j + 1]->data.priority) {
+                            TaskNode* swapTemp = taskArray[j];
+                            taskArray[j] = taskArray[j + 1];
+                            taskArray[j + 1] = swapTemp;
+                        }
+                    }
+                }
+
+                int* priorityArray = new int[count];
+                for (int i = 0; i < count; i++) {
+                    priorityArray[i] = taskArray[i]->data.priority;
+                }
+                sortPrioritiesAscending(priorityArray, count);
+
+                cout << "\nSorted Priorities Summary: ";
+                for (int i = 0; i < count; i++) {
+                    cout << priorityArray[i] << (i == count - 1 ? "" : ", ");
+                }
+                cout << "\n";
+
+                cout << "\n--- Current Tasks (Ordered by Priority) ---\n";
+                for (int i = 0; i < count; i++) {
+                    cout << "ID: " << taskArray[i]->data.id
+                         << " | Title: " << taskArray[i]->data.title
+                         << " | Category: " << taskArray[i]->data.category
+                         << " | Priority: " << taskArray[i]->data.priority
+                         << " | Hours: " << taskArray[i]->data.estimatedHours
+                         << " | Done: " << (taskArray[i]->data.completed ? "Yes" : "No") << "\n";
+                }
+
+                delete[] priorityArray;
+                delete[] taskArray;
+            }
+            
+        } else if (choice == 2) {
+            Task newTask;
+
+            cout << "Enter Task ID (integer): ";
+            cin >> newTask.id;
+
+            cout << "Enter Title (single word or use _): ";
+            cin >> newTask.title;
+
+            cout << "Enter Category: ";
+            cin >> newTask.category;
+
+            cout << "Enter Priority (1-5): ";
+            cin >> newTask.priority;
+            if (!isValidPriority(newTask.priority)) {
+                cout << "Invalid priority. Setting to 3 (Default).\n";
+                newTask.priority = 3;
             }
 
-            case 4:
-                cout << "Use this sample only as an example. "
-                     << "Delete or replace sample code before submission."
-                     << endl;
-                break;
+            cout << "Enter Estimated Hours: ";
+            cin >> newTask.estimatedHours;
+            if (!isValidHours(newTask.estimatedHours)) {
+                cout << "Invalid hours. Setting to 1.0.\n";
+                newTask.estimatedHours = 1.0;
+            }
 
-            case 0:
-                cout << "Goodbye!" << endl;
-                break;
+            newTask.completed = false;
+            insertTask(head, newTask);
+            cout << "Task added successfully.\n";
 
-            default:
-                cout << "Unexpected choice." << endl;
-                break;
+        } else if (choice == 3) {
+            int removeId;
+            cout << "Enter Task ID to remove: ";
+            cin >> removeId;
+            if (removeTaskById(head, removeId)) {
+                cout << "Task " << removeId << " removed successfully.\n";
+            } else {
+                cout << "Task ID not found.\n";
+            }
+
+        } else if (choice == 4) {
+            double totalHours = calculateTotalHours(head);
+            cout << "Total Estimated Hours: " << totalHours << " hrs\n";
+
+        } else if (choice == 5) {
+            if (saveTasksToFile("data/tasks.txt", head)) {
+                cout << "Tasks successfully saved to data/tasks.txt\n";
+            } else {
+                cout << "Failed to save tasks to file.\n";
+            }
+
+        } else if (choice == 6) {
+            cout << "Exiting program. Cleaning up memory...\n";
+        } else {
+            cout << "Invalid option. Please choose between 1 and 6.\n";
         }
+    }
 
-    } while (choice != 0);
-
-    return 0;
+    clearTasks(head);
 }

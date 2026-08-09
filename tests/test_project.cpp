@@ -1,179 +1,175 @@
 #include "project.hpp"
 #include <cassert>
 #include <cmath>
+#include <cstdio>
 #include <fstream>
 #include <iostream>
 #include <string>
 
 using namespace std;
 
+// Helper function for floating-point comparisons
 bool nearlyEqual(double actual, double expected, double tolerance = 0.0001) {
     return fabs(actual - expected) <= tolerance;
 }
 
-void createTestInventoryFile(string filename) {
+// Helper to create a temporary test data file
+void createTestTasksFile(const string& filename) {
     ofstream out(filename);
 
-    out << "A100 Apples 10 1.50" << endl;
-    out << "B200 Bread 5 3.25" << endl;
-    out << "C300 Cereal 8 4.75" << endl;
+    // Format: id title category priority estimatedHours completed
+    out << "1 Homework School 1 2.5 0" << endl;
+    out << "2 Grocery Personal 2 1.0 1" << endl;
+    out << "3 Project Work 3 5.0 0" << endl;
 
     out.close();
 }
 
-// Week 1: Program Basics
-void testWeek1ProgramBasics() {
-    ScoreList scores;
-    scores.addScore(80.0);
-    scores.addScore(90.0);
+// Week 1
+void testWeek1() {
+    // Test calculateTotalHours
+    TaskNode* head = nullptr;
+    assert(nearlyEqual(calculateTotalHours(head), 0.0));
 
-    double average = scores.getAverage();
+    Task t1{1, "Task1", "School", 3, 2.5, false};
+    Task t2{2, "Task2", "Work", 1, 4.0, false};
 
-    assert(nearlyEqual(average, 85.0));
-    assert(Student::determineLetterGrade(95.0) == 'A');
-    assert(Student::determineLetterGrade(65.0) == 'D');
+    insertTask(head, t1);
+    insertTask(head, t2);
+
+    assert(nearlyEqual(calculateTotalHours(head), 6.5));
+
+    clearTasks(head);
 }
 
-// Week 2: Decisions and Loops
-void testWeek2DecisionsAndLoops() {
-    assert(ScoreList::isValidScore(0.0));
-    assert(ScoreList::isValidScore(100.0));
-    assert(!ScoreList::isValidScore(-1.0));
-    assert(!ScoreList::isValidScore(101.0));
+// Week 2
+void testWeek2() {
+    // Priority validation
+    assert(isValidPriority(MIN_PRIORITY));
+    assert(isValidPriority(MAX_PRIORITY));
+    assert(isValidPriority(3));
+    assert(!isValidPriority(MIN_PRIORITY - 1));
+    assert(!isValidPriority(MAX_PRIORITY + 1));
 
-    assert(Task::isValidPriority(1));
-    assert(Task::isValidPriority(5));
-    assert(!Task::isValidPriority(0));
-    assert(!Task::isValidPriority(6));
-
-    assert(isValidMenuChoice(0));
-    assert(isValidMenuChoice(4));
-    assert(!isValidMenuChoice(5));
+    // Hours validation
+    assert(isValidHours(0.1));
+    assert(isValidHours(100.0));
+    assert(!isValidHours(0.0));
+    assert(!isValidHours(-2.5));
 }
 
-// Week 3: Functions and Program Design
-void testWeek3FunctionsAndProgramDesign() {
-    ScoreList scores;
-    scores.addScore(70.0);
-    scores.addScore(80.0);
-    scores.addScore(90.0);
+// Week 3
+void testWeek3() {
+    TaskNode* head = nullptr;
 
-    assert(nearlyEqual(scores.getTotal(), 240.0));
-    assert(nearlyEqual(scores.getAverage(), 80.0));
+    assert(getTaskCount(head) == 0);
+    assert(getCompletedTaskCount(head) == 0);
 
-    Student student("A123", "Alex");
-    assert(student.getId() == "A123");
-    assert(student.getName() == "Alex");
+    Task t1{1, "Math", "School", 1, 1.0, false};
+    Task t2{2, "Physics", "School", 2, 2.0, true};
+    Task t3{3, "CS", "School", 3, 3.0, true};
+
+    insertTask(head, t1);
+    insertTask(head, t2);
+    insertTask(head, t3);
+
+    assert(getTaskCount(head) == 3);
+    assert(getCompletedTaskCount(head) == 2);
+
+    clearTasks(head);
 }
 
-// Week 4: Arrays, Searching, and Sorting
-void testWeek4ArraysSearchingSorting() {
-    ScoreList scores;
-    scores.addScore(88.0);
-    scores.addScore(72.5);
-    scores.addScore(100.0);
-    scores.addScore(91.0);
+// Week 4
+void testWeek4() {
+    // Array sorting
+    int priorities[] = {5, 2, 8, 1, 3};
+    sortPrioritiesAscending(priorities, 5);
 
-    assert(scores.findScore(100.0) == 2);
-    assert(scores.findScore(50.0) == -1);
-
-    scores.sortAscending();
-
-    assert(nearlyEqual(scores.getScoreAt(0), 72.5));
-    assert(nearlyEqual(scores.getScoreAt(1), 88.0));
-    assert(nearlyEqual(scores.getScoreAt(2), 91.0));
-    assert(nearlyEqual(scores.getScoreAt(3), 100.0));
+    assert(priorities[0] == 1);
+    assert(priorities[1] == 2);
+    assert(priorities[2] == 3);
+    assert(priorities[3] == 5);
+    assert(priorities[4] == 8);
 }
 
-// Week 5: Strings and Structures
-void testWeek5StringsAndStructures() {
-    Student student("A123", "Alex");
+// Week 5
+void testWeek5() {
+    Task t{1, "Homework", "School", 2, 3.0, false};
 
-    assert(Student::isValidId("A123"));
-    assert(!Student::isValidId("a123"));
-    assert(student.getId() == "A123");
-    assert(student.getName() == "Alex");
-
-    InventoryItem item = {"B200", "Bread", 5, 3.25};
-    assert(item.sku == "B200");
-    assert(item.name == "Bread");
-    assert(item.quantity == 5);
+    // Verify struct fields and string properties
+    assert(t.id == 1);
+    assert(t.title == "Homework");
+    assert(t.category == "School");
+    assert(t.priority == 2);
+    assert(nearlyEqual(t.estimatedHours, 3.0));
+    assert(!t.completed);
 }
 
-// Week 6: Simple Linked Task List
-void testWeek6SimpleLinkedTaskList() {
-    TaskList tasks;
+// Week 6
+void testWeek6() {
+    // Linked List operations
+    TaskNode* head = nullptr;
 
-    tasks.insertFront(Task("homework", 3));
-    tasks.insertFront(Task("study", 5));
-    tasks.insertFront(Task("project", 4));
+    Task t1{101, "Math_HW", "School", 1, 2.0, false};
+    Task t2{102, "Physics_Lab", "School", 2, 4.0, false};
 
-    assert(tasks.countTasks() == 3);
-    assert(tasks.findTask("study") != nullptr);
-    assert(tasks.findTask("missing") == nullptr);
+    insertTask(head, t1);
+    insertTask(head, t2);
 
-    assert(tasks.markTaskComplete("homework"));
-    assert(tasks.markTaskComplete("project"));
+    TaskNode* found = findTaskById(head, 101);
+    assert(found != nullptr);
+    assert(found->data.title == "Math_HW");
+    assert(findTaskById(head, 999) == nullptr);
 
-    int removed = tasks.removeCompletedTasks();
+    assert(removeTaskById(head, 102));
+    assert(getTaskCount(head) == 1);
+    assert(!removeTaskById(head, 999));
 
-    assert(removed == 2);
-    assert(tasks.countTasks() == 1);
-    assert(tasks.findTask("study") != nullptr);
-    assert(tasks.findTask("homework") == nullptr);
-
-    tasks.clear();
-    assert(tasks.isEmpty());
+    clearTasks(head);
+    assert(head == nullptr);
 }
 
-// Week 7: File-Based Inventory Report
-void testWeek7FileBasedInventoryReport() {
-    string inputFilename = "tests/resources/test_inventory_input.txt";
-    string outputFilename = "tests/resources/test_inventory_report_output.txt";
+// Week 7
+void testWeek7() {
+    string filename = "test_tasks_temp.txt";
+    createTestTasksFile(filename);
 
-    createTestInventoryFile(inputFilename);
+    TaskNode* head = nullptr;
 
-    InventoryItem items[10];
-    int count = InventoryReport::readInventoryFile(inputFilename, items, 10);
+    int loadedCount = loadTasksFromFile(filename, head);
+    assert(loadedCount == 3);
+    assert(getTaskCount(head) == 3);
 
-    assert(count == 3);
-    assert(items[0].sku == "A100");
-    assert(items[2].name == "Cereal");
+    TaskNode* foundNode = findTaskById(head, 1);
+    assert(foundNode != nullptr);
+    assert(foundNode->data.title == "Homework");
+    assert(nearlyEqual(foundNode->data.estimatedHours, 2.5));
 
-    assert(nearlyEqual(InventoryReport::calculateItemValue(items[0]), 15.0));
-    assert(nearlyEqual(InventoryReport::calculateTotalInventoryValue(items, count), 69.25));
+    // Save to a new file and reload
+    string outputFilename = "test_tasks_output_temp.txt";
+    assert(saveTasksToFile(outputFilename, head));
 
-    assert(InventoryReport::findItemBySku(items, count, "B200") == 1);
-    assert(InventoryReport::findItemBySku(items, count, "Z999") == -1);
-    assert(InventoryReport::findHighestValueItemIndex(items, count) == 2);
+    clearTasks(head);
+    assert(head == nullptr);
 
-    bool wroteReport = InventoryReport::writeInventoryReport(outputFilename, items, count);
-    assert(wroteReport);
+    int reloadedCount = loadTasksFromFile(outputFilename, head);
+    assert(reloadedCount == 3);
 
-    ifstream in(outputFilename);
-    assert(in.is_open());
+    clearTasks(head);
 
-    string contents;
-    string line;
-
-    while (getline(in, line)) {
-        contents += line + "\n";
-    }
-
-    assert(contents.find("Inventory Report") != string::npos);
-    assert(contents.find("A100") != string::npos);
-    assert(contents.find("Total inventory value") != string::npos);
+    // Clean up temporary test files
+    remove(filename.c_str());
+    remove(outputFilename.c_str());
 }
 
 int main() {
-    testWeek1ProgramBasics();
-    testWeek2DecisionsAndLoops();
-    testWeek3FunctionsAndProgramDesign();
-    testWeek4ArraysSearchingSorting();
-    testWeek5StringsAndStructures();
-    testWeek6SimpleLinkedTaskList();
-    testWeek7FileBasedInventoryReport();
+    testWeek1();
+    testWeek2();
+    testWeek3();
+    testWeek4();
+    testWeek5();
+    testWeek6();
+    testWeek7();
 
-    cout << "All corrected final project template tests passed!" << endl;
-    return 0;
+    cout << "All tests passed successfully!" << endl;
 }
